@@ -4,6 +4,6 @@ class PlanController < ApplicationController
   end
 
   def show
-    @plan = Plan.find(params[:id])
+    @plan = Plan.find_by_id(params[:id])
   end
 end

@@ -14,10 +14,9 @@
 <% end %>
 
 <div class="row">
-  <div class="col-md-8">
-    <div id="map" style="width: 100%; height: 400px; background: grey" />
+  <div class="col-md-4">
+    <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
   </div>
-</div>
   <div class="col-md-4">
     <div class="row">
       <div class="col-md-4">
@@ -64,6 +63,21 @@
 
   </div>
 </div>
+<div class="row">
+  <div class="col-md-9">
+    <div id="map" style="width: 90%; height: 400px; background: grey" />
+  </div>
+  <div class="col-md-1">
+    <%= form_for :start_location do |f| %>
+      Location name: <%= f.text_field :name %>
+      <%= number_field(:start_location, :lat, step: :any) %>
+      <%= number_field(:start_location, :long, step: :any) %>
+      <%= f.submit "Submit", html: {class: "btn btn-default" } %>
+    <% end %>
+  </div>
+</div>
+
+<%= render partial: 'reward_modals/first_plan' %>
 
   <script  type="text/javascript" charset="UTF-8" >
 
@@ -140,7 +154,7 @@ function showGeoJSONData (map, file, layerName, fillColour, strokeColour) {
  * @param  {H.Map} map      A HERE Map instance within the application
  */
 function addInfoBubble(map) {
-  group = new H.map.Group();
+  var group = new H.map.Group();
 
   map.addObject(group);
 
@@ -184,7 +198,6 @@ var map = new H.Map(document.getElementById('map'),
   center: {lat: <%= @plan.lat %>, lng: <%= @plan.long %>},
   zoom: 14
 });
-var group;
 
 // MapEvents enables the event system
 // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
