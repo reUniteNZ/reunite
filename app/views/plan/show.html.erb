@@ -3,6 +3,9 @@
 <script type="text/javascript" src="https://js.cit.api.here.com/v3/3.0/mapsjs-service.js"></script>
 <script type="text/javascript" src="https://js.cit.api.here.com/v3/3.0/mapsjs-ui.js"></script>
 <script type="text/javascript" src="https://js.cit.api.here.com/v3/3.0/mapsjs-mapevents.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://js.cit.api.here.com/v3/3.0/mapsjs-pano.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://js.cit.api.here.com/v3/3.0/mapsjs-clustering.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://js.cit.api.here.com/v3/3.0/mapsjs-data.js"></script>
 
 <h1><%= @plan.name %> </h1>
 
@@ -30,10 +33,13 @@
 
     <h2> Home Zone </h2>
       <%= form_for :start_location, url: "/start_location/create", action: :POST,
-      html: {onsubmit: "addMarkerToGroup(group,
-        {lat: document.getElementById('start_location_lat').value,
-          lng: document.getElementById('start_location_long').value},
-          document.getElementById('start_location_name').value)"} do |f| %>
+      html: {onsubmit: raw('addMarkerToGroup(group,
+        {lat: document.getElementById("start_location_lat").value,
+          lng: document.getElementById("start_location_long").value},
+          infoBubbleHTML(
+          document.getElementById("start_location_name").value,
+          document.getElementById("start_location_description").value)').html_safe
+          } do |f| %>
       <div class="input-group input-group-md">
         <span class="input-group-addon" id="basic-addon1">Location Name:</span>
         <%= f.text_field :name, class: "form-control"%>
@@ -53,7 +59,7 @@
         </div>
         <%= hidden_field(:start_location, :user_id, value: current_user.id) %>
         <%= hidden_field(:start_location, :plan_id, value: @plan.id) %>
-        <%= f.submit "Submit", html: {class: "btn btn-default" } %>
+        <%= f.submit "Submit", class: "btn btn-default" %>
       <% end %>
 
   </div>
@@ -90,6 +96,44 @@ function addMarkerToGroup(group, coordinate, html) {
   group.addObject(marker);
 }
 
+function infoBubbleHTML(name, description){
+return '<h1>' + name + '</h1>' +
+      '<p> ' + description + ' </p>';
+}
+
+
+// Loading GeoJSON data to the map
+function showGeoJSONData (map, file, layerName, fillColour, strokeColour) {
+
+  // Create GeoJSON reader which will download the specified file.
+  // Shape of the file was obtained by using HERE Geocoder API.
+  // It is possible to customize look and feel of the objects.
+  var reader = new H.data.geojson.Reader(file, {
+    // This function is called each time parser detects a new map object
+    style: function (mapObject) {
+      // We can style parsed geo objects using setStyle method like this:
+      if (mapObject instanceof H.map.Polygon) {
+        mapObject.setStyle({
+          fillColor: fillColour,
+          strokeColor: strokeColour,
+          lineWidth: 3
+        });
+      }
+    }
+  });
+
+  // Start parsing the file
+  reader.parse();
+
+  // Make layer from geojson file + name the layer
+  var layer = reader.getLayer();
+  layer.name=layerName;
+  // layer.addEventListener('tap', logEvent);
+
+  // Add layer which shows GeoJSON data on the map
+  map.addLayer(layer);
+}
+
 /**
  * Add two markers showing the position of Liverpool and Manchester City football clubs.
  * Clicking on a marker opens an infobubble which holds HTML content related to the marker.
@@ -114,14 +158,12 @@ function addInfoBubble(map) {
 
   <% @plan.start_locations.each do |sl| %>
     addMarkerToGroup(group, {lat: <%= sl.lat %>, lng: <%= sl.long %>},
-      '<h1><%= sl.name %></h1>' +
-      '<p> <%= sl.description %> </p>');
+      infoBubbleHTML("<%= sl.name.to_s %>", "<%= sl.description.to_s.strip %>")
+);
   <% end %>
 
   setUpClickListener(map);
 }
-
-
 
 /**
  * Boilerplate map initialization code starts below:
@@ -129,8 +171,8 @@ function addInfoBubble(map) {
 
 // initialize communication with the platform
 var platform = new H.service.Platform({
-  app_id: 'DemoAppId01082013GAL',
-  app_code: 'AJKnXv84fjrb0KIHawS0Tg',
+  app_id: 'nna22Ktlg8CKoncAX21A',
+  app_code: 'Hh5Kpbs9vIDhdYMMmOUDEw',
   useCIT: true,
   useHTTPS: true
 });
@@ -140,7 +182,7 @@ var defaultLayers = platform.createDefaultLayers();
 var map = new H.Map(document.getElementById('map'),
   defaultLayers.normal.map,{
   center: {lat: <%= @plan.lat %>, lng: <%= @plan.long %>},
-  zoom: 3
+  zoom: 14
 });
 var group;
 
@@ -150,6 +192,17 @@ var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
 
 // create default UI with layers provided by the platform
 var ui = H.ui.UI.createDefault(map, defaultLayers);
+
+// Display Risk Zones
+// showGeoJSONData(map,'<%=File.join(Rails.root, "app", "views", "plan", "WGTN_Tsunami_RiskWGS84.geojson") %>','Tsunami Risk','rgba(200, 0, 0, 0.2)','rgba(100, 50, 0, 0.5)');
+showGeoJSONData(map,'/WGTN_Tsunami_RiskWGS84.geojson','Tsunami Risk','rgba(200, 0, 0, 0.2)','rgba(100, 50, 0, 0.5)');
+showGeoJSONData(map,'/WGTN_FloodRisk_WGS84.geojson','Flood Risk','rgba(200, 0, 0, 0.2)','rgba(200, 100, 0, 0.5)');
+
+// Display Safer Zones
+showGeoJSONData(map,'/WGTN_SportsGroundsWGS84.geojson','Meeting Point Option','rgba(0, 200, 200, 0.9)','rgba(50, 50, 100, 0.5)');
+// showGeoJSONData(map,'/geojson/WGTN_SchoolsPtsWGS.geojson','Schools',rgba(100, 200, 0, 0.1)','rgba(0, 50, 100, 0.1)');
+
+console.log(map.getLayers().asArray());
 
 // Now use the map as required...
 addInfoBubble(map);
