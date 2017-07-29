@@ -1,9 +1,9 @@
 Rails.application.routes.draw do
   get 'start_location/new'
 
-  get 'start_location/create'
+  post 'start_location/create', as: 'start_location_create'
 
-  get 'start_location/index'
+  get 'start_location/index', as: 'start_location_menu'
 
   get 'reunite/index'
 
