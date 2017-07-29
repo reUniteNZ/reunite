@@ -1,0 +1,16 @@
+@import "bootstrap-sprockets";
+@import "bootstrap";
+
+body {
+  background-color: #462255;
+}
+
+.map {
+  margin: auto;
+  display: block;
+  height: 70vh;
+}
+
+.btn {
+  display: block;
+}

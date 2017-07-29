@@ -6,6 +6,10 @@
 
 <h1><%= @plan.name %> </h1>
 
+<% if !@plan.users.exists?(id: current_user.id) then %>
+  <%= link_to "Join plan" %>
+<% end %>
+
 <div class="row">
   <div class="col-md-4">
     <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
