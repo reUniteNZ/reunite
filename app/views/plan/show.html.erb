@@ -11,27 +11,51 @@
 <% end %>
 
 <div class="row">
-  <div class="col-md-4">
-    <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
-  </div>
-  <div class="col-md-4">
-    <span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>
-  </div>
-  <div class="col-md-4">
-    <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
+  <div class="col-md-8">
+    <div id="map" style="width: 100%; height: 400px; background: grey" />
   </div>
 </div>
-<div class="row">
-  <div class="col-md-9">
-    <div id="map" style="width: 90%; height: 400px; background: grey" />
-  </div>
-  <div class="col-md-1">
-    <%= form_for :start_location do |f| %>
-      Location name: <%= f.text_field :name %>
-      <%= number_field(:start_location, :lat, step: :any) %>
-      <%= number_field(:start_location, :long, step: :any) %>
-      <%= f.submit "Submit", html: {class: "btn btn-default" } %>
-    <% end %>
+  <div class="col-md-4">
+    <div class="row">
+      <div class="col-md-4">
+        <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+      </div>
+      <div class="col-md-4">
+        <span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>
+      </div>
+      <div class="col-md-4">
+        <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
+      </div>
+    </div>
+
+    <h2> Home Zone </h2>
+      <%= form_for :start_location, url: "/start_location/create", action: :POST,
+      html: {onsubmit: "addMarkerToGroup(group,
+        {lat: document.getElementById('start_location_lat').value,
+          lng: document.getElementById('start_location_long').value},
+          document.getElementById('start_location_name').value)"} do |f| %>
+      <div class="input-group input-group-md">
+        <span class="input-group-addon" id="basic-addon1">Location Name:</span>
+        <%= f.text_field :name, class: "form-control"%>
+      </div>
+
+      <div class="form-group">
+       <label for="comment">Description:</label>
+          <%= text_area(:start_location, :description, class: "form-control") %>
+      </div>
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon1">Latitude</span>
+          <%= number_field(:start_location, :lat, step: :any, class: "form-control") %>
+        </div>
+        <div class="input-group">
+          <span class="input-group-addon" id="basic-addon1">Longitude</span>
+          <%= number_field(:start_location, :long, step: :any, class:"form-control") %>
+        </div>
+        <%= hidden_field(:start_location, :user_id, value: current_user.id) %>
+        <%= hidden_field(:start_location, :plan_id, value: @plan.id) %>
+        <%= f.submit "Submit", html: {class: "btn btn-default" } %>
+      <% end %>
+
   </div>
 </div>
 
@@ -72,7 +96,7 @@ function addMarkerToGroup(group, coordinate, html) {
  * @param  {H.Map} map      A HERE Map instance within the application
  */
 function addInfoBubble(map) {
-  var group = new H.map.Group();
+  group = new H.map.Group();
 
   map.addObject(group);
 
@@ -118,6 +142,7 @@ var map = new H.Map(document.getElementById('map'),
   center: {lat: <%= @plan.lat %>, lng: <%= @plan.long %>},
   zoom: 3
 });
+var group;
 
 // MapEvents enables the event system
 // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
