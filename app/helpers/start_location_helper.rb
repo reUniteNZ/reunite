@@ -1,0 +1,2 @@
+module StartLocationHelper
+end

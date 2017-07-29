@@ -1,0 +1,127 @@
+<link rel="stylesheet" type="text/css" href="https://js.cit.api.here.com/v3/3.0/mapsjs-ui.css" />
+<script type="text/javascript" src="https://js.cit.api.here.com/v3/3.0/mapsjs-core.js"></script>
+<script type="text/javascript" src="https://js.cit.api.here.com/v3/3.0/mapsjs-service.js"></script>
+<script type="text/javascript" src="https://js.cit.api.here.com/v3/3.0/mapsjs-ui.js"></script>
+<script type="text/javascript" src="https://js.cit.api.here.com/v3/3.0/mapsjs-mapevents.js"></script>
+
+<h1><%= @plan.name %> </h1>
+
+<div class="row">
+  <div class="col-md-4">
+    <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+  </div>
+  <div class="col-md-4">
+    <span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>
+  </div>
+  <div class="col-md-4">
+    <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-9">
+    <div id="map" style="width: 90%; height: 400px; background: grey" />
+  </div>
+  <div class="col-md-1">
+    <%= form_for :start_location do |f| %>
+      Location name: <%= f.text_field :name %>
+      <%= number_field(:start_location, :lat, step: :any) %>
+      <%= number_field(:start_location, :long, step: :any) %>
+      <%= f.submit "Submit", html: {class: "btn btn-default" } %>
+    <% end %>
+  </div>
+</div>
+
+  <script  type="text/javascript" charset="UTF-8" >
+
+
+  function setUpClickListener(map) {
+    // Attach an event listener to map display
+    // obtain the coordinates and display in an alert box.
+    map.addEventListener('tap', function (evt) {
+      var coord = map.screenToGeo(evt.currentPointer.viewportX,
+              evt.currentPointer.viewportY);
+              setSideformCoords(coord);
+    });
+  }
+
+function setSideformCoords(coord){
+  document.getElementById("start_location_lat").value = coord.lat;
+  document.getElementById("start_location_long").value = coord.lng;
+}
+
+/**
+ * Creates a new marker and adds it to a group
+ * @param {H.map.Group} group       The group holding the new marker
+ * @param {H.geo.Point} coordinate  The location of the marker
+ * @param {String} html             Data associated with the marker
+ */
+function addMarkerToGroup(group, coordinate, html) {
+  var marker = new H.map.Marker(coordinate);
+  // add custom data to the marker
+  marker.setData(html);
+  group.addObject(marker);
+}
+
+/**
+ * Add two markers showing the position of Liverpool and Manchester City football clubs.
+ * Clicking on a marker opens an infobubble which holds HTML content related to the marker.
+ * @param  {H.Map} map      A HERE Map instance within the application
+ */
+function addInfoBubble(map) {
+  var group = new H.map.Group();
+
+  map.addObject(group);
+
+  // add 'tap' event listener, that opens info bubble, to the group
+  group.addEventListener('tap', function (evt) {
+    // event target is the marker itself, group is a parent event target
+    // for all objects that it contains
+    var bubble =  new H.ui.InfoBubble(evt.target.getPosition(), {
+      // read custom data
+      content: evt.target.getData()
+    });
+    // show info bubble
+    ui.addBubble(bubble);
+  }, false);
+
+  <% @plan.start_locations.each do |sl| %>
+    addMarkerToGroup(group, {lat: <%= sl.lat %>, lng: <%= sl.long %>},
+      '<h1><%= sl.name %></h1>' +
+      '<p> <%= sl.description %> </p>');
+  <% end %>
+
+  setUpClickListener(map);
+}
+
+
+
+/**
+ * Boilerplate map initialization code starts below:
+ */
+
+// initialize communication with the platform
+var platform = new H.service.Platform({
+  app_id: 'DemoAppId01082013GAL',
+  app_code: 'AJKnXv84fjrb0KIHawS0Tg',
+  useCIT: true,
+  useHTTPS: true
+});
+var defaultLayers = platform.createDefaultLayers();
+
+// initialize a map - this map is centered over Europe
+var map = new H.Map(document.getElementById('map'),
+  defaultLayers.normal.map,{
+  center: {lat: <%= @plan.lat %>, lng: <%= @plan.long %>},
+  zoom: 3
+});
+
+// MapEvents enables the event system
+// Behavior implements default interactions for pan/zoom (also on mobile touch environments)
+var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+
+// create default UI with layers provided by the platform
+var ui = H.ui.UI.createDefault(map, defaultLayers);
+
+// Now use the map as required...
+addInfoBubble(map);
+  </script>

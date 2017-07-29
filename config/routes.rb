@@ -1,9 +1,15 @@
 Rails.application.routes.draw do
+  get 'start_location/new'
+
+  get 'start_location/create'
+
+  get 'start_location/index'
+
   get 'reunite/index'
 
   get 'drill/index'
 
-  get 'plan/index'
+  resources :plan
 
   get 'action_menu/index', as: 'action_menu'
 
