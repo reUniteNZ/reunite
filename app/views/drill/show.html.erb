@@ -1,0 +1,39 @@
+<h1> Drill for <%= @drill.id %>, started at <%= @drill.start_time %> </h1
+<div class="row">
+  <div class="col-md-9">
+    <div id="map" style="width: 90%; height: 400px; background: grey" />
+  </div>
+  <div class="col-md-1">
+    <%= form_for :start_location do |f| %>
+      Location name: <%= f.text_field :name %>
+      <%= number_field(:start_location, :lat, step: :any) %>
+      <%= number_field(:start_location, :long, step: :any) %>
+      <%= f.submit "Submit", html: {class: "btn btn-default" } %>
+    <% end %>
+  </div>
+</div>
+
+<script type="text/javascript" charset="UTF-8">
+// initialize communication with the platform
+var platform = new H.service.Platform({
+  app_id: 'DemoAppId01082013GAL',
+  app_code: 'AJKnXv84fjrb0KIHawS0Tg',
+  useCIT: true,
+  useHTTPS: true
+});
+var defaultLayers = platform.createDefaultLayers();
+
+// initialize a map - this map is centered over Europe
+var map = new H.Map(document.getElementById('map'),
+  defaultLayers.normal.map,{
+  center: {lat: <%= @plan.lat %>, lng: <%= @plan.long %>},
+  zoom: 3
+});
+
+// MapEvents enables the event system
+// Behavior implements default interactions for pan/zoom (also on mobile touch environments)
+var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+
+// create default UI with layers provided by the platform
+var ui = H.ui.UI.createDefault(map, defaultLayers);
+</script>

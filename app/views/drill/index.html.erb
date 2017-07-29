@@ -1,2 +1,5 @@
-<h1>Drill#index</h1>
-<p>Find me in app/views/drill/index.html.erb</p>
+<h1>Pick a plan to drill</h1>
+<% @plans.each do |plan| %>
+  <%= plan.name %>
+  <%= link_to "Start Drill", drill_create_path(plan_id: plan.id), method: "get" %>
+<% end %>

@@ -31,6 +31,8 @@ gem 'omniauth-facebook'
 gem 'bootstrap-sass'
 gem 'faraday'
 gem 'koala'
+gem 'notifications'
+gem 'activity_notification'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 3.0'
 # Use ActiveModel has_secure_password

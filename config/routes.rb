@@ -8,6 +8,10 @@ Rails.application.routes.draw do
   get 'reunite/index'
 
   get 'drill/index'
+  
+  get 'drill/create'
+  
+  get 'drill/show'
 
   resources :plan
 
