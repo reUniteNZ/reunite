@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  get 'reunite/index'
+
+  get 'drill/index'
+
   get 'plan/index'
 
   get 'action_menu/index', as: 'action_menu'
