@@ -1,3 +1,20 @@
-<%= button_to "Plan", plan_index_path, method: "get", class: "btn btn-default" %>
-<%= button_to "Drill", drill_index_path, method: "get", class: "btn btn-default" %>
-<%= button_to "Reunite", reunite_index_path, method: "get", class: "btn btn-default" %>
+<div class="row row-vert">
+  <div class="col-md-4">
+    <%= link_to plan_index_path, method: "get" do %>
+    <img class="img-responsive" src="/images/plan.png" alt="">
+    <h2 style="text-align: center"> PLAN </h2>
+    <% end %>
+  </div>
+  <div class="col-md-4">
+    <%= link_to drill_index_path, method: "get" do %>
+      <img class="img-responsive" src="/images/drill.png" alt="">
+      <h2 style="text-align: center"> DRILL </h2>
+    <% end %>
+  </div>
+  <div class="col-md-4">
+    <%= link_to reunite_index_path, method: "get" do %>
+      <img class="img-responsive" src="/images/reunite.png" alt="">
+      <h2 style="text-align: center"> REUNITE </h2>
+    <% end %>
+  </div>
+</div>

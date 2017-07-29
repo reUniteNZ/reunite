@@ -1,8 +1,25 @@
 @import "bootstrap-sprockets";
 @import "bootstrap";
 
-body {
+html {
   background-color: #462255;
+  height: 100%;
+}
+
+body {
+  height: 100%;
+}
+
+.row-vert {
+  height: 70%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  
+  @media only screen and (max-width: 40em) {
+    display: inline;
+    align-items: center;
+  }
 }
 
 .map {
@@ -13,4 +30,26 @@ body {
 
 .btn {
   display: block;
+}
+
+.center-vertical {
+  height: 100%;
+}
+
+.action-button {
+  
+}
+
+#top #login-modal .modal-header {
+  background: #4993e4;
+}
+#top #login-modal .modal-header h4 {
+  color: #fff;
+}
+#top #login-modal a {
+  color: #4993e4;
+}
+#top #login-modal p {
+  font-weight: 300;
+  margin-bottom: 20px;
 }

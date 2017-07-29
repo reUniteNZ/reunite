@@ -1,5 +1,7 @@
 <h1>My plans</h1>
-<% @plans.each do |plan| %>  
-  <%= plan.name + " " + plan.users.count.to_s() %>
+<% @plans.each do |plan| %>
+  <%= plan.name %>  <span class="glyphicon glyphicon-user" aria-hidden="true"></span> <%= plan.users.count.to_s() %>
+  <% byebug %>
+  <%= button_to "View plan", plan_path(plan), method: "get"%>
 <% end %>
 
