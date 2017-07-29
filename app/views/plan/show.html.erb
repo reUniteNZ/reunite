@@ -6,6 +6,10 @@
 
 <h1><%= @plan.name %> </h1>
 
+<% if !@plan.users.exists?(id: current_user.id) then %>
+  <%= link_to "Join plan" %>
+<% end %>
+
 <div class="row">
   <div class="col-md-8">
     <div id="map" style="width: 100%; height: 400px; background: grey" />

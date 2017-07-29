@@ -1,5 +1,6 @@
 class PlanController < ApplicationController
   def index
+    @plans = current_user.plans
   end
 
   def show
