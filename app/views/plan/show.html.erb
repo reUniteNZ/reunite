@@ -22,16 +22,22 @@
   <div class="col-md-4">
     <div class="row">
       <div class="col-md-4">
-        <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+        <button onclick="document.getElementById('safe').style.display = 'none'; document.getElementById('home').style.display = 'block';">
+          <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+        </button
       </div>
       <div class="col-md-4">
+        <button>
         <span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span>
+      </button>
       </div>
       <div class="col-md-4">
+        <button onclick="document.getElementById('home').style.display = 'none'; document.getElementById('safe').style.display = 'block';">
         <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
+      </button>
       </div>
     </div>
-
+    <div id ="home">
     <h2> Home Zone </h2>
       <%= form_for :start_location, url: "/start_location/create", action: :POST, remote:true,
       :authenticity_token => true,
@@ -63,8 +69,8 @@
         <%= hidden_field(:start_location, :plan_id, value: @plan.id) %>
         <%= f.submit "Submit", class: "btn btn-default" %>
       <% end %>
-
-
+    </div>
+      <div id="safe" style="display:none">
       <h2> Safe Zone </h2>
         <%= form_for :meet_location, url: "/meet_location/create", action: :POST, remote:true,
         :authenticity_token => true,
@@ -95,6 +101,7 @@
           <%= hidden_field(:meet_location, :plan_id, value: @plan.id) %>
           <%= f.submit "Submit", class: "btn btn-default" %>
         <% end %>
+      </div>
   </div>
 </div>
 
