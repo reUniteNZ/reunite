@@ -10,12 +10,14 @@
 <h1><%= @plan.name %> </h1>
 
 <% if !@plan.users.exists?(id: current_user.id) then %>
-  <%= link_to "Join plan" %>
+  <%= link_to "Join plan", plan_add_path(pid: @plan.id) %>
 <% end %>
 
 <div class="row">
-  <div class="col-md-4">
-    <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+
+  <div class="col-md-8">
+    <div id="map" style="width: 90%; height: 400px; background: grey" />
+  </div>
   </div>
   <div class="col-md-4">
     <div class="row">
@@ -31,7 +33,8 @@
     </div>
 
     <h2> Home Zone </h2>
-      <%= form_for :start_location, url: "/start_location/create", action: :POST,
+      <%= form_for :start_location, url: "/start_location/create", action: :POST, remote:true,
+      :authenticity_token => true,
       html: {onsubmit: raw('addMarkerToGroup(group,
         {lat: document.getElementById("start_location_lat").value,
           lng: document.getElementById("start_location_long").value},
@@ -61,19 +64,37 @@
         <%= f.submit "Submit", class: "btn btn-default" %>
       <% end %>
 
-  </div>
-</div>
-<div class="row">
-  <div class="col-md-9">
-    <div id="map" style="width: 90%; height: 400px; background: grey" />
-  </div>
-  <div class="col-md-1">
-    <%= form_for :start_location do |f| %>
-      Location name: <%= f.text_field :name %>
-      <%= number_field(:start_location, :lat, step: :any) %>
-      <%= number_field(:start_location, :long, step: :any) %>
-      <%= f.submit "Submit", html: {class: "btn btn-default" } %>
-    <% end %>
+
+      <h2> Safe Zone </h2>
+        <%= form_for :meet_location, url: "/meet_location/create", action: :POST, remote:true,
+        :authenticity_token => true,
+        html: {onsubmit: raw('addMarkerToGroup(group,
+          {lat: document.getElementById("meet_location_lat").value,
+            lng: document.getElementById("meet_location_long").value},
+            infoBubbleHTML(
+            document.getElementById("meet_location_name").value,
+            document.getElementById("meet_location_description").value)').html_safe
+            } do |f| %>
+        <div class="input-group input-group-md">
+          <span class="input-group-addon" id="basic-addon1">Location Name:</span>
+          <%= f.text_field :name, class: "form-control"%>
+        </div>
+
+        <div class="form-group">
+         <label for="comment">Description:</label>
+            <%= text_area(:meet_location, :description, class: "form-control") %>
+        </div>
+          <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1">Latitude</span>
+            <%= number_field(:meet_location, :lat, step: :any, class: "form-control") %>
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1">Longitude</span>
+            <%= number_field(:meet_location, :long, step: :any, class:"form-control") %>
+          </div>
+          <%= hidden_field(:meet_location, :plan_id, value: @plan.id) %>
+          <%= f.submit "Submit", class: "btn btn-default" %>
+        <% end %>
   </div>
 </div>
 
@@ -95,6 +116,8 @@
 function setSideformCoords(coord){
   document.getElementById("start_location_lat").value = coord.lat;
   document.getElementById("start_location_long").value = coord.lng;
+  document.getElementById("meet_location_lat").value = coord.lat;
+  document.getElementById("meet_location_long").value = coord.lng;
 }
 
 /**
@@ -103,12 +126,13 @@ function setSideformCoords(coord){
  * @param {H.geo.Point} coordinate  The location of the marker
  * @param {String} html             Data associated with the marker
  */
-function addMarkerToGroup(group, coordinate, html) {
-  var marker = new H.map.Marker(coordinate);
-  // add custom data to the marker
-  marker.setData(html);
-  group.addObject(marker);
-}
+ function addMarkerToGroup(group, coordinate, html, icon) {
+   var marker = new H.map.Marker(coordinate,
+          { icon: new H.map.Icon(icon)});
+   // add custom data to the marker
+   marker.setData(html);
+   group.addObject(marker);
+ }
 
 function infoBubbleHTML(name, description){
 return '<h1>' + name + '</h1>' +
@@ -170,12 +194,19 @@ function addInfoBubble(map) {
     ui.addBubble(bubble);
   }, false);
 
-  <% @plan.start_locations.each do |sl| %>
-    addMarkerToGroup(group, {lat: <%= sl.lat %>, lng: <%= sl.long %>},
-      infoBubbleHTML("<%= sl.name.to_s %>", "<%= sl.description.to_s.strip %>")
-);
+  <% @plan.start_locations.last(1).each do |sl| %>
+      addMarkerToGroup(group, {lat: <%= sl.lat %>, lng: <%= sl.long %>},
+      infoBubbleHTML("<%= sl.name.to_s %>", "<%= sl.description.to_s.strip %>"),
+      '/images/home_2.png'
+    );
   <% end %>
 
+  <% @plan.meet_locations.last(1).each do |ml| %>
+      addMarkerToGroup(group, {lat: <%= ml.lat %>, lng: <%= ml.long %>},
+      infoBubbleHTML("<%= ml.name.to_s %>", "<%= ml.description.to_s.strip %>"),
+      '/images/work_heart.png'
+    );
+  <% end %>
   setUpClickListener(map);
 }
 

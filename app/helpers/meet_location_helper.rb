@@ -1,0 +1,2 @@
+module MeetLocationHelper
+end

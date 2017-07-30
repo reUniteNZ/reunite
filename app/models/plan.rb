@@ -6,10 +6,18 @@ class Plan < ApplicationRecord
   has_many :start_locations
 
   def lat
-    start_locations.first.lat || 0
+    if(start_locations.first.nil?)
+      -41.3
+    else
+      start_locations.last.lat
+    end
   end
 
   def long
-    start_locations.first.long || 0
+    if(start_locations.last.nil?)
+      174.7
+    else
+      start_locations.last.long || 0
+    end
   end
 end

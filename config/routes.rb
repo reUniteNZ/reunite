@@ -5,15 +5,23 @@ Rails.application.routes.draw do
 
   get 'start_location/index', as: 'start_location_menu'
 
+  get 'meet_location/new'
+
+  post 'meet_location/create', as: 'meet_location_create'
+
+  get 'meet_location/index', as: 'meet_location_menu'
+
   get 'reunite/index'
 
   get 'drill/index'
-  
+
   get 'drill/create'
-  
+
   get 'drill/show'
 
   resources :plan
+
+  post 'plan/plan_add', as: 'plan_add'
 
   get 'action_menu/index', as: 'action_menu'
 
