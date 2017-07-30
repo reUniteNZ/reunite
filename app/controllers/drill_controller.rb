@@ -13,7 +13,7 @@ class DrillController < ApplicationController
     drill = Drill.create(plan_id: params[:plan_id], start_time: DateTime.current)
     plan = Plan.find_by_id(params[:plan_id])
     plan.users.each do |user|
-        DrillUser.create(drill_id: drill.id, user_id: user.id)
+        DrillUsers.create(drill_id: drill.id, user_id: user.id)
     end
     redirect_to drill_show_path(id: drill.id)
   end
