@@ -21,4 +21,7 @@ class PlanController < ApplicationController
   def plan_add
 
   end
+  
+  def new
+  end
 end
